@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+  
+    h2 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+  
+    p {
+      color: #666;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+  
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+    }
+  
+    video {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2 id="quick-look-at-a-more-believable-phishing-attempt">Would you fall for this?</h2>
+  <p>Welcome back. If you are new and have somehow stumbled here, greetings. In this write-up I'm going to show a more believable attempt
+  at phishing. So I encounter this types of attacks day-to-day. This particular one, made me chuckle a bit
+  and shows some kind of dedication from the threat actor (either that or they were lucky). First things first, it was super targeted.
+  It was directed to an actual existing email. There were also other PII associated with the email that shows this was a spear phishing attempt.</p>
+  <p>As usual I was more interested in the attachment and quickly obtained it. It was a html document and I was immediately on it doing 
+  'analysis'. The structure was nothing new. It was javascript with two variables, one variable being the victim's address and another some weird strings. 
+  The rest was just base64 encoding of base64 encoded data.
+  <img src="/1.png" alt="base64 of base64"></p>
+  <p>Of course decoding it is no big issue really. It reveals some more javascript which is kind of 'obfuscated'. The code seems to do a few things: It declares
+  some variables including document.write. It then creates a string by concatenating an empty string with the weird characters between the <strong>&quot;&quot;</strong>. It then calls
+  decodeuri() with the created string as its argument. The resulting decoded string is split at each character resulting in a massive array of single characters.
+  The characters are then indexed out, building the source code of the page.
+  <img src="/2.png" alt="a bit of source code obfuscation"></p>
+  <p>Untangling this mess of a code reveals more html code with some javascript and AJAX calls that does some interesting things.
+  <div style="text-align: left;"><img src="/4.png"></div></p>
+  <p>After creating a somehow convincing outlook login page with the various animations used during the process, the earlier variable with some 
+  weird strings is split at <strong>:</strong>. It then indexes the second part of the string, which looks like base64 encoded URL. This URL turns out to be 
+  <strong>http://micro[.]kamikzyias[.]uk/app/MM2[.]php</strong>. This phishing attempt is practically no different from a lot of the others I've seen, only it's a bit more realistic
+  and convincing. Also, the subdomain micro.kamikzyias.uk seems to be super involved in these types of attacks. Anyway, as soon as the victim enters
+  the credentials needed, the credentials are harvested while redirecting them to legitimate outlook. 
+  <div style="text-align: left;"><img src="/5.png" alt="code for POSTing credentials"></div>
+  Here's how the page looks like:
+  <div style="text-align: left;"><video width="1080" height="740" controls>
+    <source src="vid1.mp4" type="video/mp4">
+  </video>
+  </p></div>
+  <p>This looks and feels like legitimate outlook but in real sense it is a credential harvester.
+</body>
+</html>
+
